@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# TEST Profile — H2 in-memory DB, no Redis/RabbitMQ required
+# ─────────────────────────────────────────────────────────────────────────────
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+
+  mail:
+    host: smtp.mailtrap.io
+    port: 587
+
+  cache:
+    type: simple   # Use Simple in-memory cache instead of Redis during tests
+
+jwt:
+  secret: TestSecretKeyForJWTTokensInUnitTestsMustBeAtLeast256BitsLong!!
+  expiration: 3600000
+
+razorpay:
+  key:
+    id: dummy_key
+    secret: dummy_secret
+
+app:
+  rabbitmq:
+    exchange: payment.exchange
+    routing-key:
+      payment-success: payment.success
+      refund: payment.refund
+
+eureka:
+  client:
+    enabled: false   # Don't try to register with Eureka during tests
