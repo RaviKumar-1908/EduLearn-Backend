@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; color: #333; line-height: 1.6; margin: 0; background: #f8fafc; }
+        .wrapper { max-width: 600px; margin: 20px auto; background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .header { background: #1e293b; color: white; padding: 30px; text-align: center; }
+        .order-info { padding: 30px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+        .course-card { display: flex; align-items: center; padding: 25px; gap: 20px; }
+        .course-img { width: 120px; height: 70px; border-radius: 8px; object-fit: cover; }
+        .cta { padding: 30px; text-align: center; }
+        .button { display: inline-block; padding: 12px 35px; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: 800; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1 style="margin:0">Enrollment Confirmed!</h1>
+        </div>
+        <div class="order-info">
+            <p style="margin:0; font-size: 0.9rem; font-weight: 700; color: #64748b;">ORDER RECEIPT</p>
+            <h2 style="margin: 5px 0 0; color: #0f172a;" th:text="${orderId}">#LMS-12345</h2>
+        </div>
+        <div class="course-card">
+            <img th:src="${thumbnailUrl}" class="course-img" alt="Course">
+            <div>
+                <h3 style="margin:0; font-size: 1.1rem;" th:text="${courseName}">Course Name</h3>
+                <p style="margin:5px 0 0; font-size: 0.85rem; color: #64748b;">By <span th:text="${instructorName}">Instructor</span></p>
+            </div>
+        </div>
+        <div class="cta">
+            <p>You now have full lifetime access to this course. Start learning now to build your skills!</p>
+            <a th:href="${courseUrl}" class="button">START LEARNING</a>
+        </div>
+    </div>
+</body>
+</html>

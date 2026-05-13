@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f7ff; }
+        .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%); padding: 40px 20px; text-align: center; color: white; }
+        .content { padding: 40px; }
+        .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 0.85rem; color: #6b7280; border-top: 1px solid #edf2f7; }
+        .button { display: inline-block; padding: 14px 30px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 8px; font-weight: 700; margin-top: 25px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        h1 { margin: 0; font-size: 24px; font-weight: 800; }
+        p { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to LMS!</h1>
+        </div>
+        <div class="content">
+            <p>Hello <strong th:text="${name}">User</strong>,</p>
+            <p>We're thrilled to have you join our learning community. You've just taken the first step towards mastering new skills and achieving your goals.</p>
+            <p>Explore our vast catalog of courses curated by industry experts and start your journey today.</p>
+            <a th:href="${dashboardUrl}" class="button">Go to Dashboard</a>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Online Learning Management System. All rights reserved.</p>
+            <p>If you have any questions, reply to this email or visit our support center.</p>
+        </div>
+    </div>
+</body>
+</html>
