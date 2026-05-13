@@ -1,0 +1,297 @@
+
+services:
+  # ── INFRASTRUCTURE ────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: lms-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: lms_auth
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:alpine
+    container_name: lms-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: lms-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK_RELATIVE: 0.6
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # ── CORE SERVICES ─────────────────────────────────────────────────────────
+  eureka-server:
+    build: ./eureka-server
+    container_name: lms-eureka
+    ports:
+      - "8761:8761"
+    environment:
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: lms-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - eureka-server
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      SPRING_DATA_REDIS_HOST: ${REDIS_HOST}
+      SPRING_REDIS_HOST: ${REDIS_HOST}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  # ── BUSINESS SERVICES ─────────────────────────────────────────────────────
+  auth-service:
+    build: ./auth-service
+    container_name: lms-auth
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${AUTH_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  course-service:
+    build: ./course-service
+    container_name: lms-course
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${COURSE_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  lesson-service:
+    build: ./lesson-service
+    container_name: lms-lesson
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${LESSON_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_PROFILES_ACTIVE: docker
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  assessment-service:
+    build: ./assessment-service
+    container_name: lms-assessment
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${ASSESSMENT_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  enrollment-service:
+    build: ./enrollment-service
+    container_name: lms-enrollment
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${ENROLLMENT_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+
+  payment-service:
+    build: ./payment-service
+    container_name: lms-payment
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${PAYMENT_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATA_REDIS_HOST: ${REDIS_HOST}
+      SPRING_REDIS_HOST: ${REDIS_HOST}
+      SPRING_RABBITMQ_HOST: ${RABBITMQ_HOST}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: docker
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
+      SPRING_MAIL_HOST: ${SMTP_HOST}
+      SPRING_MAIL_PORT: ${SMTP_PORT}
+      SPRING_MAIL_USERNAME: ${SMTP_USER}
+      SPRING_MAIL_PASSWORD: ${SMTP_PASS}
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  notification-service:
+    build: ./notification-service
+    container_name: lms-notification
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - eureka-server
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: ${NOTIFICATION_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_DATA_REDIS_HOST: ${REDIS_HOST}
+      SPRING_REDIS_HOST: ${REDIS_HOST}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+      SPRING_MAIL_HOST: ${SMTP_HOST}
+      SPRING_MAIL_PORT: ${SMTP_PORT}
+      SPRING_MAIL_USERNAME: ${SMTP_USER}
+      SPRING_MAIL_PASSWORD: ${SMTP_PASS}
+
+  progress-service:
+    build: ./progress-service
+    container_name: lms-progress
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${PROGRESS_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATA_REDIS_HOST: ${REDIS_HOST}
+      SPRING_REDIS_HOST: ${REDIS_HOST}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  discussion-service:
+    build: ./discussion-service
+    container_name: lms-discussion
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: ${DISCUSSION_DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+  admin-server:
+    build: ./admin-server
+    container_name: lms-admin
+    ports:
+      - "9090:9090"
+    depends_on:
+      - eureka-server
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_ZONE}
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-Xms128m -Xmx384m -XX:+UseSerialGC"
+    restart: always
+
+volumes:
+  mysql_data:
