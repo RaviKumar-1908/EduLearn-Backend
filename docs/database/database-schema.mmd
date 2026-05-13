@@ -1,0 +1,59 @@
+erDiagram
+    USER ||--o{ PROFILE : has
+    USER ||--o{ ENROLLMENT : owns
+    USER ||--o{ BUG_REPORT : submits
+    
+    COURSE ||--o{ MODULE : contains
+    MODULE ||--o{ LESSON : contains
+    COURSE ||--o{ ENROLLMENT : has_registrations
+    
+    ENROLLMENT ||--|| PROGRESS : tracks
+
+    USER {
+        Long userId PK
+        String email
+        String password
+        String role "STUDENT, INSTRUCTOR, ADMIN"
+        String gender
+    }
+
+    COURSE {
+        Long courseId PK
+        String title
+        String description
+        Double price
+        Long instructorId FK
+        Boolean isPublished
+    }
+
+    ENROLLMENT {
+        Long enrollmentId PK
+        Long studentId FK
+        Long courseId FK
+        DateTime enrolledAt
+        String status
+    }
+
+    TRANSACTION {
+        Long paymentId PK
+        Long studentId FK
+        Long courseId FK
+        Double amount
+        String transactionId
+        String status "SUCCESS, FAILED"
+    }
+
+    PROGRESS {
+        Long progressId PK
+        Long enrollmentId FK
+        Integer lessonsCompleted
+        Float percentComplete
+    }
+
+    NOTIFICATION {
+        Long notificationId PK
+        Long userId FK
+        String type
+        String message
+        Boolean isRead
+    }

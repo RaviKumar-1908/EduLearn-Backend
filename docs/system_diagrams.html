@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduLearn | Platform Blueprint</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono&display=swap">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #f472b6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        header {
+            margin-bottom: 6rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 4rem;
+            position: sticky;
+            top: 2rem;
+            z-index: 1000;
+        }
+
+        nav a {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 99px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .section {
+            margin-bottom: 8rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section-title {
+            margin-bottom: 3rem;
+            padding-left: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .section-title h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .diagram-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            overflow: auto;
+            max-height: 80vh;
+        }
+
+        .mermaid {
+            background: white !important;
+            padding: 1rem;
+            border-radius: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid svg {
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: 70vh !important;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 1.5rem;
+        }
+
+        .concept-card h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 4rem 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Mermaid Node Custom Styling */
+        .mermaid .label {
+            font-weight: 600 !important;
+        }
+    </style>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: { rankSpacing: 100, nodeSpacing: 60, curve: 'basis' },
+            themeVariables: {
+                primaryColor: '#6366f1',
+                secondaryColor: '#8b5cf6',
+                tertiaryColor: '#f8fafc',
+                lineColor: '#64748b',
+                fontFamily: 'Outfit'
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Technical Blueprint</h1>
+            <p>Comprehensive engineering documentation for the EduLearn microservices platform.</p>
+        </header>
+
+        <nav>
+            <a href="#arch">Architecture</a>
+            <a href="#usecase">Use Cases</a>
+            <a href="#data">Data Logic</a>
+            <a href="#class-diagrams">Class Diagrams</a>
+            <a href="#sequences">System Sequences</a>
+            <a href="#roadmap">Future</a>
+        </nav>
+
+        <!-- ARCHITECTURE -->
+        <section id="arch" class="section">
+            <div class="section-title">
+                <h2>System Infrastructure</h2>
+                <p style="color: var(--text-muted)">Service discovery, monitoring, and async messaging patterns.</p>
+            </div>
+            <div class="diagram-card">
+                <div class="mermaid">
+                    graph TB
+                    subgraph Clients
+                    Web[React Application]
+                    end
+
+                    subgraph "Core Infrastructure"
+                    Gateway[API Gateway<br />:8000]
+                    Eureka[Eureka Discovery<br />:8761]
+                    Admin[Admin Monitor<br />:9090]
+                    end
+
+                    subgraph "Domain Services"
+                    direction LR
+                    S1[Auth<br />:8081]
+                    S2[Course<br />:8082]
+                    S3[Lesson<br />:8083]
+                    S4[Assess<br />:8084]
+                    S5[Enroll<br />:8085]
+                    S6[Payment<br />:8086]
+                    S7[Progress<br />:8087]
+                    S8[Discussion<br />:8088]
+                    end
+
+                    Web --> Gateway
+                    Gateway <--> Eureka
+                        Admin <--> Eureka
+
+                            Gateway --> S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8
+                            Admin -- Monitoring --- S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8
+
+                            subgraph "Event Bus & Mail"
+                            S6 -- "payment.success" --> Rabbit[RabbitMQ]
+                            Rabbit -- "create.enrollment" --> S5
+                            S7 -- "milestone" --> Rabbit
+                            Rabbit -- "notify" --> S_Notif[Notif :8089]
+
+                            S_Notif & S6 --> SMTP((SMTP Server))
+                            end
+
+                            subgraph "Persistence Layer (Logically Isolated)"
+                            S1 --> DB_Auth[(Auth DB)]
+                            S2 --> DB_Course[(Course DB)]
+                            S3 --> DB_Lesson[(Lesson DB)]
+                            S5 --> DB_Enroll[(Enroll DB)]
+                            S6 --> DB_Pay[(Pay DB)]
+                            S8 --> DB_Disc[(Disc DB)]
+                            S4 --> DB_Assess[(Assess DB)]
+                            S_Notif --> DB_Notif[(Notif DB)]
+                            S7 & S_Notif --> Redis[(Redis Store)]
+                            end
+
+                            classDef infra fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px;
+                            classDef domain fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px;
+                            classDef db fill:#f0fdf4,stroke:#16a34a,stroke-width:2px;
+
+                            class Gateway,Eureka,Admin,Rabbit infra;
+                            class S1,S2,S3,S4,S5,S6,S7,S8,S_Notif domain;
+                            class MySQL,Redis db;
+                </div>
+            </div>
+        </section>
+
+        <!-- USE CASES -->
+        <section id="usecase" class="section">
+            <div class="section-title">
+                <h2>Product Functionality</h2>
+                <p style="color: var(--text-muted)">The actual built capabilities of the platform.</p>
+            </div>
+            <div class="diagram-card">
+                <div class="mermaid">
+                    graph LR
+                    subgraph Users
+                    G((Guest))
+                    S((Student))
+                    I((Instructor))
+                    A((Admin))
+                    end
+
+                    subgraph "Learning Platform"
+                    direction TB
+                    subgraph "Public"
+                    U1([Browse & Search])
+                    U2([Login / Signup])
+                    end
+                    subgraph "Student Experience"
+                    U3([Track Progress & Seconds])
+                    U4([Take Adaptive Quizzes])
+                    U5([Purchase & Subscribe])
+                    U6([Verified Certificates])
+                    end
+                    subgraph "Instructor Tools"
+                    U7([Curriculum Authoring])
+                    U8([AI Lesson Summaries])
+                    U9([Student Performance])
+                    end
+                    end
+
+                    G --> U1 & U2
+                    S --> U1 & U2 & U3 & U4 & U5 & U6
+                    I --> U7 & U8 & U9
+                    A --> U2 & U9
+
+                    classDef actor fill:#fff,stroke:#6366f1,stroke-width:2px;
+                    classDef uc fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px;
+                    class G,S,I,A actor;
+                    class U1,U2,U3,U4,U5,U6,U7,U8,U9 uc;
+                </div>
+            </div>
+        </section>
+
+        <!-- DATA SCHEMA -->
+        <section id="data" class="section">
+            <div class="section-title">
+                <h2>Distributed Data Logic</h2>
+                <p style="color: var(--text-muted)">Logical cross-service relationships and database isolation.</p>
+            </div>
+            <div class="diagram-card">
+                <div class="mermaid">
+                    graph TD
+                    %% Global Styles
+                    classDef table fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef title fill:#6366f1,color:#fff,font-weight:900;
+
+                    %% AUTH SERVICE
+                    subgraph "Auth Database"
+                    U_Head["USER ENTITY"]:::title
+                    U["Fields:<br />- userId (PK)<br />- fullName<br />- email (Unique)<br />- passwordHash<br />- role
+                    (Enum)<br />- provider (Enum)<br />- approvalStatus<br />- mobile<br />- bio<br />-
+                    profilePicUrl<br />- gender<br />- active (bool)<br />- createdAt"]
+                    U_Head --- U
+                    end
+
+                    %% COURSE SERVICE
+                    subgraph "Course Database"
+                    C_Head["COURSE ENTITY"]:::title
+                    C["Fields:<br />- courseId (PK)<br />- title<br />- description (Text)<br />- category<br />-
+                    level<br />- price (Double)<br />- instructorId<br />- instructorName<br />- instructorEmail<br />-
+                    thumbnailUrl<br />- totalDuration<br />- isPublished<br />- language<br />- status (Enum)<br />-
+                    averageRating<br />- ratingCount<br />- createdAt"]
+                    C_Head --- C
+                    end
+
+                    %% LESSON SERVICE
+                    subgraph "Lesson Database"
+                    L_Head["LESSON ENTITY"]:::title
+                    L["Fields:<br />- lessonId (PK)<br />- courseId (FK)<br />- title<br />- description (Text)<br />-
+                    videoUrl<br />- resourceUrl<br />- orderIndex<br />- durationMinutes<br />- preview (bool)<br />-
+                    published (bool)<br />- createdAt"]
+                    L_Head --- L
+                    end
+
+                    %% ENROLLMENT SERVICE
+                    subgraph "Enrollment Database"
+                    E_Head["ENROLLMENT ENTITY"]:::title
+                    E["Fields:<br />- enrollmentId (PK)<br />- studentId (FK)<br />- courseId (FK)<br />-
+                    enrolledAt<br />- completedAt<br />- status (Active/Comp)<br />- progressPercent<br />-
+                    certificateIssued<br />- priceAtPurchase"]
+                    E_Head --- E
+                    end
+
+                    %% PROGRESS SERVICE
+                    subgraph "Progress Database"
+                    P_Head["PROGRESS ENTITY"]:::title
+                    P["Fields:<br />- progressId (PK)<br />- studentId<br />- courseId<br />- lessonId<br />-
+                    watchedSeconds<br />- isCompleted<br />- lastAccessedAt<br />- completedAt"]
+
+                    Cert_Head["CERTIFICATE ENTITY"]:::title
+                    Cert["Fields:<br />- certificateId (PK)<br />- studentId<br />- courseId<br />- issuedAt<br />-
+                    certificateUrl<br />- verificationCode (Unique)<br />- instructorName<br />- courseName<br />-
+                    courseLevel<br />- courseDuration"]
+
+                    P_Head --- P
+                    Cert_Head --- Cert
+                    end
+
+                    %% ASSESSMENT SERVICE
+                    subgraph "Assessment Database (lms_assessment)"
+                    QZ_Head["QUIZ ENTITY"]:::title
+                    QZ["Fields:<br />- quizId (PK)<br />- courseId (FK)<br />- title<br />- description<br />-
+                    timeLimitMinutes<br />- passingScore<br />- maxAttempts<br />- isPublished"]
+
+                    QN_Head["QUESTION ENTITY"]:::title
+                    QN["Fields:<br />- questionId (PK)<br />- quizId (FK)<br />- text (Text)<br />- type (MCQ/TF)<br />-
+                    options (List)<br />- correctAnswer<br />- marks<br />- orderIndex"]
+
+                    AT_Head["ATTEMPT ENTITY"]:::title
+                    AT["Fields:<br />- attemptId (PK)<br />- quizId (FK)<br />- studentId (FK)<br />- score (Int)<br />-
+                    passed (bool)<br />- startedAt<br />- submittedAt"]
+
+                    QZ_Head --- QZ
+                    QN_Head --- QN
+                    AT_Head --- AT
+                    end
+
+                    %% PAYMENT SERVICE
+                    subgraph "Payment Database"
+                    Pay_Head["PAYMENT ENTITY"]:::title
+                    Pay["Fields:<br />- paymentId (PK)<br />- studentId (FK)<br />- courseId (FK)<br />- amount
+                    (Double)<br />- transactionId (Unique)<br />- status (Enum)<br />- mode (Card/UPI)"]
+                    Pay_Head --- Pay
+                    end
+
+                    %% RELATIONSHIPS
+                    U -.->|Created By| C
+                    U -.->|Identity For| E
+                    U -.->|Test Taker| AT
+                    C ---|Curriculum| L
+                    C -.->|Target Product| E
+                    C -.->|Evaluation| QZ
+                    L -.->|Learning Log| P
+                    E -.->|Issues| Cert
+                    Pay -.->|Activates| E
+                    QZ ---|Comprises| QN
+                    QZ -.->|Session For| AT
+
+                    class U_Head,C_Head,L_Head,E_Head,P_Head,Cert_Head,Pay_Head,QZ_Head,QN_Head,AT_Head title;
+                    class U,C,L,E,P,Cert,Pay,QZ,QN,AT table;
+                </div>
+            </div>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h3>Database Per Service</h3>
+                    <p style="color: var(--text-muted)">Each service owns its data. No shared tables or database-level
+                        foreign keys across services to ensure maximum scalability.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>Logical Joins</h3>
+                    <p style="color: var(--text-muted)">Joins are performed at the API level. We store external IDs
+                        (e.g. courseId) and resolve details through inter-service REST calls.</p>
+                </div>
+                <div class="concept-card">
+                    <h3>Messaging Integrity</h3>
+                    <p style="color: var(--text-muted)">RabbitMQ ensures that critical state changes (like payments) are
+                        propagated across services reliably and asynchronously.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLASS DIAGRAMS -->
+        <section id="class-diagrams" class="section">
+            <div class="section-title">
+                <h2>Service Class Structure</h2>
+                <p style="color: var(--text-muted)">Deep dive into the internal component architecture of each
+                    microservice.</p>
+            </div>
+
+            <!-- Auth Service Class Diagram -->
+            <div class="diagram-card">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: var(--primary); color: white;">Auth Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Security & Identity Flow</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Auth["AuthController<br />+register(dto)<br />+login(req)<br />+changePassword(id,
+                    pass)<br />+resetPassword(email, otp)"]:::cls
+                    S_Auth["AuthService
+                    [Interface]<br />+register(req)<br />+authenticate(req)<br />+refreshToken(token)<br />+forgotPassword(email)"]:::iface
+                    R_Auth["UserRepository [Interface]<br />+findByEmail(email)<br />+existsByEmail(email)"]:::iface
+                    E_User["User Entity<br />userId: Integer<br />fullName: String<br />email: String<br />role:
+                    Role<br />active: boolean"]:::cls
+
+                    C_Auth --> S_Auth
+                    S_Auth --> R_Auth
+                    R_Auth --> E_User
+                </div>
+            </div>
+
+            <!-- Course Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: var(--secondary); color: white;">Course Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Catalog & authoring Management</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Crs["CourseController<br />+getAllCourses()<br />+createCourse(dto)<br />+searchCourses(keyword)<br />+getAdminStats()"]:::cls
+                    S_Crs["CourseService
+                    [Interface]<br />+saveCourse(dto)<br />+publishCourse(id)<br />+updateRating(id)<br />+getFeaturedCourses()"]:::iface
+                    R_Crs["CourseRepository [Interface]<br />+findByCategory(cat)<br />+searchByTitle(kw)"]:::iface
+                    E_Crs["Course Entity<br />courseId: Integer<br />title: String<br />category: String<br />price:
+                    Double<br />isPublished: Boolean"]:::cls
+
+                    C_Crs --> S_Crs
+                    S_Crs --> R_Crs
+                    R_Crs --> E_Crs
+                </div>
+            </div>
+
+            <!-- Progress Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #10b981; color: white;">Progress Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Academic Milestones</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Prg["ProgressController<br />+trackProgress(dto)<br />+getCourseProgress(cid)<br />+getStreak(sid)"]:::cls
+                    S_Prg["ProgressService [Interface]<br />+updateWatchedSeconds(sid, lid, sec)<br />+markComplete(sid,
+                    lid)<br />+getCourseMilestones(sid, cid)"]:::iface
+                    R_Prg["ProgressRepository [Interface]<br />+findByStudentAndLesson(sid,
+                    lid)<br />+sumWatchedByCourse(sid, cid)"]:::iface
+                    E_Prg["Progress Entity<br />progressId: int<br />studentId: int<br />lessonId:
+                    int<br />watchedSeconds: int<br />isCompleted: boolean"]:::cls
+
+                    C_Prg --> S_Prg
+                    S_Prg --> R_Prg
+                    R_Prg --> E_Prg
+                </div>
+            </div>
+
+            <!-- Lesson Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #ef4444; color: white;">Lesson Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Content Delivery & AI Tutor</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Lsn["LessonController<br />+getLessonsByCourse(id)<br />+publishLesson(id)<br />+askAi(id,
+                    req)"]:::cls
+                    S_Lsn["LessonService [Interface]<br />+createLesson(dto)<br />+updateLesson(id, dto)<br />+askAi(id,
+                    req)<br />+getTotalLessonsCount()"]:::iface
+                    R_Lsn["LessonRepository [Interface]<br />+findByCourseId(cid)<br />+countByCourseId(cid)"]:::iface
+                    E_Lsn["Lesson Entity<br />lessonId: Integer<br />courseId: Integer<br />title: String<br />videoUrl:
+                    String<br />published: Boolean"]:::cls
+
+                    C_Lsn --> S_Lsn
+                    S_Lsn --> R_Lsn
+                    R_Lsn --> E_Lsn
+                </div>
+            </div>
+
+            <!-- Enrollment Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #f59e0b; color: white;">Enrollment Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Access & Certificate Management</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Enr["EnrollmentResource<br />+enroll(sid, cid)<br />+markComplete(sid,
+                    cid)<br />+issueCertificate(sid, cid)<br />+getAdminStats()"]:::cls
+                    S_Enr["EnrollmentService [Interface]<br />+unenroll(sid, cid)<br />+isEnrolled(sid,
+                    cid)<br />+getEnrollmentCounts(ids)"]:::iface
+                    R_Enr["EnrollmentRepository
+                    [Interface]<br />+findByStudentId(sid)<br />+countByCourseId(cid)"]:::iface
+                    E_Enr["Enrollment Entity<br />enrollmentId: int<br />studentId: int<br />status:
+                    String<br />progressPercent: int<br />certificateIssued: boolean"]:::cls
+
+                    C_Enr --> S_Enr
+                    S_Enr --> R_Enr
+                    R_Enr --> E_Enr
+                </div>
+            </div>
+
+            <!-- Payment Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #3b82f6; color: white;">Payment Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Razorpay Gateway Engine</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Pay["PaymentResource<br />+createRazorpayOrder(amt)<br />+verifyRazorpay(data)<br />+refund(paymentId)<br />+getAdminStats()"]:::cls
+                    S_Pay["PaymentService [Interface]<br />+processPayment(p)<br />+subscribe(sid,
+                    plan)<br />+isSubscriptionActive(sid)"]:::iface
+                    R_Pay["PaymentRepository
+                    [Interface]<br />+findByStudentId(sid)<br />+findByTransactionId(txid)"]:::iface
+                    E_Pay["Payment Entity<br />paymentId: int<br />amount: double<br />status:
+                    String<br />transactionId: String"]:::cls
+
+                    C_Pay --> S_Pay
+                    S_Pay --> R_Pay
+                    R_Pay --> E_Pay
+                </div>
+            </div>
+
+            <!-- Assessment Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #8b5cf6; color: white;">Assessment Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Quiz Engine & Grading</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Asm["AssessmentResource<br />+createQuiz(quiz)<br />+startAttempt(sid,
+                    qid)<br />+submitAttempt(id, ans)"]:::cls
+                    S_Asm["AssessmentService [Interface]<br />+addQuestion(qid, q)<br />+getBestScore(sid,
+                    qid)<br />+getAttemptsByQuiz(qid)"]:::iface
+                    R_Asm["QuizRepository [Interface]<br />+findByCourseId(cid)<br />+findAllPublished()"]:::iface
+                    E_Asm["Quiz Entity<br />quizId: int<br />courseId: int<br />passingScore: int<br />isPublished:
+                    boolean<br />maxAttempts: int"]:::cls
+
+                    C_Asm --> S_Asm
+                    S_Asm --> R_Asm
+                    R_Asm --> E_Asm
+                </div>
+            </div>
+
+            <!-- Notification Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #ec4899; color: white;">Notification Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Omnichannel Alert System</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Not["NotificationResource<br />+sendNotification(req)<br />+getUnreadCount(uid)<br />+markAllRead(uid)"]:::cls
+                    S_Not["NotificationService
+                    [Interface]<br />+sendBulkNotification(ids)<br />+dispatchEmail(notif)<br />+markAsRead(id)"]:::iface
+                    R_Not["NotificationRepository
+                    [Interface]<br />+findByUserIdOrderByCreatedAt(uid)<br />+countByUserIdAndIsReadFalse(uid)"]:::iface
+                    E_Not["Notification Entity<br />notifId: int<br />userId: int<br />type: String<br />isRead:
+                    boolean"]:::cls
+
+                    C_Not --> S_Not
+                    S_Not --> R_Not
+                    R_Not --> E_Not
+                </div>
+            </div>
+
+            <!-- Discussion Service Class Diagram -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #6366f1; color: white;">Discussion Service</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Community & Thread Logic</span>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    classDef cls fill:#fff,stroke:#6366f1,stroke-width:2px,color:#0f172a,text-align:left;
+                    classDef iface fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,font-style:italic;
+
+                    C_Dsc["DiscussionResource<br />+createThread(thread)<br />+postReply(tid,
+                    reply)<br />+upvoteThread(tid, uid)"]:::cls
+                    S_Dsc["DiscussionService
+                    [Interface]<br />+pinThread(id)<br />+acceptReply(id)<br />+getThreadsByCourses(ids)"]:::iface
+                    R_Dsc["ThreadRepository [Interface]<br />+findByCourseId(cid)<br />+findByLessonId(lid)"]:::iface
+                    E_Dsc["DiscussionThread Entity<br />threadId: int<br />courseId: int<br />title:
+                    String<br />isPinned: boolean"]:::cls
+
+                    C_Dsc --> S_Dsc
+                    S_Dsc --> R_Dsc
+                    R_Dsc --> E_Dsc
+                </div>
+            </div>
+        </section>
+
+        <!-- SYSTEM SEQUENCES -->
+        <section id="sequences" class="section">
+            <div class="section-title">
+                <h2>Core System Sequences</h2>
+                <p style="color: var(--text-muted)">Visualizing behavioral interactions and cross-service event
+                    orchestration.</p>
+            </div>
+
+            <!-- Identity & Security Sequence -->
+            <div class="diagram-card">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #10b981; color: white;">Identity Flow</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Signup, Login & JWT Gateway
+                        Validation</span>
+                </div>
+                <div class="mermaid">
+                    sequenceDiagram
+                    participant U as User (UI)
+                    participant G as API Gateway
+                    participant A as Auth Service
+                    participant DB as Auth MySQL
+
+                    Note over U,DB: Signup Flow
+                    U->>G: POST /api/auth/register
+                    G->>A: Forward Request
+                    A->>DB: Save User (Hashed Password)
+                    DB-->>A: Success
+                    A-->>U: 201 Created
+
+                    Note over U,DB: Login & JWT Flow
+                    U->>G: POST /api/auth/login
+                    G->>A: Forward Credentials
+                    A->>DB: Validate User
+                    A->>A: Generate JWT Token (Claims)
+                    A-->>U: Return JWT + UserProfile
+
+                    Note over U,DB: Subsequent Validated Request
+                    U->>G: GET /api/courses (Header: Bearer JWT)
+                    G->>G: JwtAuthFilter: Verify Signature
+                    G->>G: Extract Role (e.g. STUDENT)
+                    G->>A: (Optional) Introspect Token
+                    G->>G: Route to Course Service
+                </div>
+            </div>
+
+            <!-- Course Authoring Sequence -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #f59e0b; color: white;">Authoring Flow</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Instructor Content Creation &
+                        Publishing</span>
+                </div>
+                <div class="mermaid">
+                    sequenceDiagram
+                    participant I as Instructor
+                    participant G as API Gateway
+                    participant C as Course Service
+                    participant L as Lesson Service
+                    participant N as Notification Service
+
+                    I->>G: POST /api/course (Draft)
+                    G->>C: Create Course Entity
+                    C-->>I: 201 Created (courseId)
+                    I->>G: POST /api/lesson (Add Video)
+                    G->>L: Save Lesson metadata
+                    L-->>I: Success
+                    I->>G: PUT /api/course/publish/{id}
+                    G->>C: Update status to PUBLISHED
+                    C->>N: Trigger Announcement
+                    N-->>I: Dashboard Update
+                </div>
+            </div>
+
+            <!-- Checkout Sequence -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #3b82f6; color: white;">Event Flow</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Secure Checkout & Enrollment
+                        Trigger</span>
+                </div>
+                <div class="mermaid">
+                    sequenceDiagram
+                    participant U as Student (UI)
+                    participant G as API Gateway
+                    participant P as Payment Service
+                    participant R as Razorpay API
+                    participant MQ as RabbitMQ (Bus)
+                    participant E as Enrollment Service
+
+                    U->>G: POST /api/payments/create-order
+                    G->>P: Forward Request
+                    P->>R: Generate Order ID
+                    R-->>P: order_id
+                    P-->>U: Return order_id
+                    U->>R: Open Checkout Modal (JS SDK)
+                    R-->>U: payment_id & signature
+                    U->>G: POST /api/payments/verify
+                    G->>P: Verify Signature
+                    P->>MQ: Publish event [payment.success]
+                    MQ->>E: Consume [payment.success]
+                    E->>E: Create Enrollment Record
+                    E-->>U: WebSocket: "Course Unlocked!"
+                </div>
+            </div>
+
+            <!-- AI Tutor Sequence -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #ef4444; color: white;">Interactive Flow</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">AI Lesson Summarization &
+                        Questioning</span>
+                </div>
+                <div class="mermaid">
+                    sequenceDiagram
+                    participant U as Student
+                    participant L as Lesson Service
+                    participant AI as AI Engine (Groq/Gemini)
+                    participant P as Progress Service
+
+                    U->>L: GET /api/lesson/{id}
+                    L-->>U: Video Content & Transcript
+                    U->>L: POST /api/lesson/{id}/ask-ai (prompt)
+                    L->>AI: Request Analysis
+                    AI-->>L: Contextual Response
+                    L-->>U: Styled AI Feedback
+                    U->>P: PUT /progress (watched 300s)
+                    P->>P: Update Redis Cache
+                </div>
+            </div>
+
+            <!-- Achievement Sequence -->
+            <div class="diagram-card" style="margin-top: 2rem;">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                    <span class="badge" style="background: #8b5cf6; color: white;">Academic Flow</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted)">Quiz Attempt & Certificate Issuance</span>
+                </div>
+                <div class="mermaid">
+                    sequenceDiagram
+                    participant U as Student
+                    participant A as Assessment Service
+                    participant P as Progress Service
+                    participant E as Enrollment Service
+                    participant N as Notification Service
+
+                    U->>A: POST /attempts/submit (Answers)
+                    A->>A: Evaluate Grade
+                    alt Score >= Passing
+                    A->>P: POST /milestone (Quiz Passed)
+                    P->>E: Trigger Certificate Logic
+                    E->>E: Generate PDF
+                    E->>N: Send Success Alert
+                    N-->>U: Email & WebSocket Notification
+                    else Score < Passing A-->>U: "Try Again (Attempts Remaining)"
+                        end
+                </div>
+            </div>
+        </section>
+
+        <!-- ROADMAP -->
+        <section id="roadmap" class="section">
+            <div class="section-title">
+                <h2>Future Roadmap</h2>
+                <p style="color: var(--text-muted)">Next phases of platform evolution.</p>
+            </div>
+            <div class="diagram-card"
+                style="background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));">
+                <div class="concept-grid">
+                    <div>
+                        <h3 style="color: var(--primary)">Gamification (Phase 2)</h3>
+                        <ul style="color: var(--text-muted)">
+                            <li>Daily Learning Streaks</li>
+                            <li>Global Leaderboards</li>
+                            <li>Achievement Badges</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--secondary)">AI Insight (Phase 3)</h3>
+                        <ul style="color: var(--text-muted)">
+                            <li>Personalized Pathing</li>
+                            <li>Voice-to-Text Transcriptions</li>
+                            <li>Smart Grading Systems</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            EduLearn Platform Blueprint &bull; Engineering Documentation &bull; 2026
+        </footer>
+    </div>
+</body>
+
+</html>

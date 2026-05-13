@@ -1,0 +1,221 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: api-gateway
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      httpclient:
+        connect-timeout: 30000
+        response-timeout: 30s
+        websocket:
+          max-frame-payload-length: 65536
+      accesslog:
+        enabled: true
+      default-filters:
+        - PreserveHostHeader=true
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials RETAIN_FIRST
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**,/api/v1/admin/**,/api/bugs/**
+
+        - id: oauth2-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/oauth2/**
+
+        - id: login-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/login/**
+
+        - id: course-service
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/api/course/**,/api/courses/**,/courses/**
+
+        - id: assessment-service
+          uri: lb://ASSESSMENT-SERVICE
+          predicates:
+            - Path=/api/assessment/**
+
+        - id: enrollment-service
+          uri: lb://ENROLLMENT-SERVICE
+          predicates:
+            - Path=/api/enrollment/**,/api/enrollments/**,/enrollments/**
+
+        - id: discussion-service
+          uri: lb://DISCUSSION-SERVICE
+          predicates:
+            - Path=/api/threads/**,/api/replies/**
+
+        - id: lesson-service
+          uri: lb://LESSON-SERVICE
+          predicates:
+            - Path=/api/lesson/**
+
+        - id: progress-service
+          uri: lb://PROGRESS-SERVICE
+          predicates:
+            - Path=/api/progress/**
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payments/**,/api/payment/**,/payments/**
+
+        - id: notification-service-api
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notification/**, /api/notifications/**
+
+        # WebSocket upgrade traffic
+        - id: notification-websocket
+          uri: lb:ws://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/ws-notifications/**
+
+        # ===== SWAGGER DOC ROUTES =====
+        - id: auth-service-docs
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth-service/v3/api-docs
+          filters:
+            - RewritePath=/auth-service/v3/api-docs, /v3/api-docs
+
+        - id: course-service-docs
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/course-service/v3/api-docs
+          filters:
+            - RewritePath=/course-service/v3/api-docs, /v3/api-docs
+
+        - id: assessment-service-docs
+          uri: lb://ASSESSMENT-SERVICE
+          predicates:
+            - Path=/assessment-service/v3/api-docs
+          filters:
+            - RewritePath=/assessment-service/v3/api-docs, /v3/api-docs
+
+        - id: enrollment-service-docs
+          uri: lb://ENROLLMENT-SERVICE
+          predicates:
+            - Path=/enrollment-service/v3/api-docs
+          filters:
+            - RewritePath=/enrollment-service/v3/api-docs, /v3/api-docs
+
+        - id: discussion-service-docs
+          uri: lb://DISCUSSION-SERVICE
+          predicates:
+            - Path=/discussion-service/v3/api-docs
+          filters:
+            - RewritePath=/discussion-service/v3/api-docs, /v3/api-docs
+
+        - id: lesson-service-docs
+          uri: lb://LESSON-SERVICE
+          predicates:
+            - Path=/lesson-service/v3/api-docs
+          filters:
+            - RewritePath=/lesson-service/v3/api-docs, /v3/api-docs
+
+        - id: progress-service-docs
+          uri: lb://PROGRESS-SERVICE
+          predicates:
+            - Path=/progress-service/v3/api-docs
+          filters:
+            - RewritePath=/progress-service/v3/api-docs, /v3/api-docs
+
+        - id: payment-service-docs
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payment-service/v3/api-docs
+          filters:
+            - RewritePath=/payment-service/v3/api-docs, /v3/api-docs
+
+        - id: notification-service-docs
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notification-service/v3/api-docs
+          filters:
+            - RewritePath=/notification-service/v3/api-docs, /v3/api-docs
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authService:
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+      courseService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+  timelimiter:
+    instances:
+      authService:
+        timeoutDuration: 5s
+      courseService:
+        timeoutDuration: 5s
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: Auth Service
+        url: /auth-service/v3/api-docs
+      - name: Course Service
+        url: /course-service/v3/api-docs
+      - name: Assessment Service
+        url: /assessment-service/v3/api-docs
+      - name: Enrollment Service
+        url: /enrollment-service/v3/api-docs
+      - name: Discussion Service
+        url: /discussion-service/v3/api-docs
+      - name: Lesson Service
+        url: /lesson-service/v3/api-docs
+      - name: Progress Service
+        url: /progress-service/v3/api-docs
+      - name: Payment Service
+        url: /payment-service/v3/api-docs
+      - name: Notification Service
+        url: /notification-service/v3/api-docs
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.http.server.reactive: INFO
+    org.springframework.web.reactive: INFO
+    reactor.netty.http.server: INFO
+    com.lms.api_gateway: INFO

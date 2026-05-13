@@ -1,0 +1,66 @@
+graph TD
+    subgraph Client ["Frontend (React + Vite)"]
+        UI[User Interface]
+        UC[User Context]
+        NC[Notification Hook]
+    end
+
+    subgraph Infrastructure ["Cloud Infrastructure"]
+        GW[API Gateway :8000]
+        EU[Eureka Server :8761]
+        ADM[Admin Server :8081]
+    end
+
+    subgraph Microservices ["Business Logic Layer"]
+        AUTH[Auth Service :8080]
+        LS[Lesson Service :8082]
+        ENR[Enrollment Service :8083]
+        PAY[Payment Service :8086]
+        ASS[Assessment Service :8084]
+        DIS[Discussion Service :8085]
+        NOT[Notification Service :8088]
+        PRO[Progress Service :8087]
+    end
+
+    subgraph Data ["Persistence & Messaging"]
+        MDB[(MySQL DBs)]
+        RED[(Redis Cache)]
+        RMQ[[RabbitMQ]]
+        MAIL[Mailhog]
+    end
+
+    subgraph AI ["External AI Integration"]
+        GROQ[Groq/Llama 3 API]
+    end
+
+    subgraph PaymentGate ["External Payment"]
+        RAZOR[Razorpay API]
+    end
+
+    %% Routing
+    UI --> GW
+    GW --> AUTH
+    GW --> LS
+    GW --> ENR
+    GW --> PAY
+    GW --> ASS
+    GW --> DIS
+    GW --> NOT
+    GW --> PRO
+
+    %% Discovery
+    AUTH & LS & ENR & PAY & ASS & DIS & NOT & PRO -- Register --> EU
+    GW -- Discover --> EU
+
+    %% Inter-service / Tools
+    LS -- "AI Tutor" --> GROQ
+    LS -- "Cache Responses" --> RED
+    PAY -- "Verify" --> RAZOR
+    
+    ENR -- "Publish Events" --> RMQ
+    PAY -- "Publish Events" --> RMQ
+    LS -- "Publish Events" --> RMQ
+    
+    RMQ -- "Consume Events" --> NOT
+    NOT -- "Send Email" --> MAIL
+    NOT -- "WebSocket Push" --> UI

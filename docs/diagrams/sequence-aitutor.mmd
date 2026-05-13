@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant Student as Frontend (Student)
+    participant GW as API Gateway
+    participant LS as Lesson Service
+    participant RED as Redis Cache
+    participant AI as Groq (Llama 3 API)
+
+    Student->>GW: POST /api/lesson/ai-tutor/ask
+    GW->>LS: Forward Request
+    LS->>RED: Check for Cached Response
+    
+    alt Cache Hit
+        RED-->>LS: Return Cached AI Text
+    else Cache Miss
+        LS->>AI: Generate Explanation (Prompt Context)
+        AI-->>LS: AI Response Content
+        LS->>RED: Store Response (TTL 1 Hour)
+    end
+    
+    LS-->>Student: Return Markdown Explanation

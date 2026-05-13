@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant LS as Lesson/Enrollment Service
+    participant RMQ as RabbitMQ
+    participant NOT as Notification Service
+    participant WS as WebSocket Controller
+    participant Student as Frontend (Student Hub)
+
+    Student->>NOT: Establish WebSocket (STOMP) /ws-notifications
+    NOT-->>Student: Connected
+
+    LS->>RMQ: Publish Event (e.g. COURSE_PUBLISHED)
+    RMQ-->>NOT: Consume Event
+    NOT->>NOT: Save Notification to DB
+    NOT->>WS: Broadcast Message to /topic/notifications/{userId}
+    WS-->>Student: Push Real-time JSON Payload
+    Student->>Student: Update Notification Count/Toast

@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant Student as Frontend (Student)
+    participant GW as API Gateway
+    participant PAY as Payment Service
+    participant RZP as Razorpay API
+    participant RMQ as RabbitMQ
+    participant ENR as Enrollment Service
+    participant NOT as Notification Service
+
+    Student->>GW: POST /api/payments (Course ID)
+    GW->>PAY: Forward Request
+    PAY->>RZP: Create Order
+    RZP-->>PAY: Order ID
+    PAY-->>Student: Razorpay Details
+    
+    Student->>RZP: Complete Payment UI
+    RZP-->>Student: Payment Success (Signature)
+    
+    Student->>GW: POST /api/payments/verify
+    GW->>PAY: Verify Signature
+    PAY->>RZP: Fetch Payment Details
+    RZP-->>PAY: Confirmed
+    PAY->>PAY: Save Transaction (DB)
+    PAY->>RMQ: Publish "PAYMENT_SUCCESS" Event
+    PAY-->>Student: Success Response
+
+    RMQ-->>ENR: Consume Payment Event
+    ENR->>ENR: Create Enrollment (DB)
+    ENR->>RMQ: Publish "COURSE_ENROLLED" Event
+    
+    RMQ-->>NOT: Consume Enrollment Event
+    NOT->>NOT: Send Confirmation Email (Mailhog)
+    NOT->>NOT: Push WebSocket Notification
