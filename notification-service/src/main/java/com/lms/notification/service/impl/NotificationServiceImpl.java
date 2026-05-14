@@ -81,7 +81,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NOTIFICATIONS, key = "#notification.userId")
+    // @CacheEvict(value = CACHE_NOTIFICATIONS, key = "#notification.userId")
     public void sendNotification(Notification notification) {
         log.debug("Sending notification to userId={} type={}", notification.getUserId(), notification.getType());
 
@@ -145,7 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NOTIFICATIONS, allEntries = true)
+    // @CacheEvict(value = CACHE_NOTIFICATIONS, allEntries = true)
     public void markAsRead(int notificationId) {
         log.debug("markAsRead called for notificationId={}", notificationId);
 
@@ -166,7 +166,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NOTIFICATIONS, key = "#userId")
+    // @CacheEvict(value = CACHE_NOTIFICATIONS, key = "#userId")
     public void markAllRead(int userId) {
         log.debug("markAllRead called for userId={}", userId);
         notificationRepository.markAllAsReadByUserId(userId);
@@ -183,7 +183,7 @@ public class NotificationServiceImpl implements NotificationService {
      * window bypass the database entirely.
      */
     @Override
-    @Cacheable(value = CACHE_NOTIFICATIONS, key = "#userId")
+    // @Cacheable(value = CACHE_NOTIFICATIONS, key = "#userId")
     public List<Notification> getByUser(int userId) {
         log.debug("getByUser (cache miss) for userId={}", userId);
         List<Notification> results = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
@@ -221,7 +221,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NOTIFICATIONS, allEntries = true)
+    // @CacheEvict(value = CACHE_NOTIFICATIONS, allEntries = true)
     public void deleteNotification(int notificationId) {
         log.debug("deleteNotification called for notificationId={}", notificationId);
 
@@ -236,7 +236,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NOTIFICATIONS, key = "#userId")
+    // @CacheEvict(value = CACHE_NOTIFICATIONS, key = "#userId")
     public void deleteAllForUser(int userId) {
         log.info("deleteAllForUser called for userId={}", userId);
         notificationRepository.deleteByUserId(userId);
