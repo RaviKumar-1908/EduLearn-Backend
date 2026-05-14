@@ -26,8 +26,6 @@ public class LessonRequestDto {
 
 	private String resourceUrl;
 
-	@NotNull(message = "Order index is required")
-	@Min(value = 1, message = "Order index must be at least 1")
 	private Integer orderIndex;
 
 	@Min(value = 1, message = "Duration must be positive")

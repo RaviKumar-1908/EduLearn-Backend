@@ -28,6 +28,11 @@ public class LessonController {
 
 	@PostMapping
 	public ResponseEntity<LessonResponseDto> createLesson(@Valid @RequestBody LessonRequestDto requestDto) {
+		if (requestDto.getOrderIndex() == null || requestDto.getOrderIndex() <= 0) {
+			List<LessonResponseDto> existing = lessonService.getLessonsByCourse(requestDto.getCourseId());
+			int nextIndex = existing.isEmpty() ? 1 : existing.size() + 1;
+			requestDto.setOrderIndex(nextIndex);
+		}
 		return new ResponseEntity<>(lessonService.createLesson(requestDto), HttpStatus.CREATED);
 	}
 
@@ -38,7 +43,9 @@ public class LessonController {
 
 	@GetMapping("/course/{courseId}")
 	public ResponseEntity<List<LessonResponseDto>> getLessonsByCourse(@PathVariable int courseId) {
-		return ResponseEntity.ok(lessonService.getLessonsByCourse(courseId));
+		List<LessonResponseDto> lessons = lessonService.getLessonsByCourse(courseId);
+		System.out.println("DEBUG: Lesson Service - Course ID: " + courseId + " | Found: " + (lessons != null ? lessons.size() : "NULL") + " lessons");
+		return ResponseEntity.ok(lessons);
 	}
 
 	@GetMapping("/course/{courseId}/published")
